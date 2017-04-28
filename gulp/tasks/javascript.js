@@ -34,7 +34,8 @@ gulp.task('js', () => {
   .pipe(plumber())
   .pipe(babel())
   .pipe(uglify({
-    preserveComments: 'license'
+    preserveComments: 'license',
+    mangle: true
   }))
   .pipe(header(config.banner))
   .pipe(gulp.dest(config.build + '/js'))
