@@ -1,0 +1,149 @@
+
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="url"],
+input[type="date"],
+input[type="month"],
+input[type="time"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="week"],
+input[type="number"],
+input[type="search"],
+input[type="tel"],
+input[type="color"],
+select,
+textarea {
+  font-size: 2rem;
+  line-height: 3rem;
+  padding-left: 1.2rem;
+  padding-right: 1.2rem;
+  @include plumber-box(
+    $padding: 1,
+    $margin: 0 1,
+    $border: 1px
+  );
+  display: inline-block;
+  border: 1px solid $input-border-color;
+  border-radius: $input-border-radius;
+  vertical-align: middle;
+  box-sizing: border-box;
+  &:focus {
+    outline: 0;
+    border-color: $focus-color;
+  }
+  &[disabled] {
+    cursor: not-allowed;
+    background-color: $input-disabled-background-color;
+    color: $input-disabled-color;
+  }
+}
+
+input[type=file] {
+  @include plumber();
+}
+
+
+
+input:not([type]) {
+  font-size: 2rem;
+  line-height: 3rem;
+  padding-left: 1.2rem;
+  padding-right: 1.2rem;
+  @include plumber-box(
+    $padding: 1,
+    $margin: 0 1,
+    $border: 1px
+  );
+  display: inline-block;
+  border: 1px solid $input-border-color;
+  border-radius: $input-border-radius;
+  box-sizing: border-box;
+  &:focus {
+    outline: 0;
+    border-color: $focus-color;
+  }
+  &[disabled] {
+    cursor: not-allowed;
+    background-color: $input-disabled-background-color;
+    color: $input-disabled-color;
+  }
+}
+
+
+
+input[type="color"] {
+  padding: 1rem;
+}
+
+input[type="file"]:focus,
+input[type="radio"]:focus,
+input[type="checkbox"]:focus {
+  outline: thin solid $focus-color;
+  outline: 1px auto $focus-color;
+}
+
+input[readonly],
+select[readonly],
+textarea[readonly] {
+  background-color: $input-readonly-background-color;
+  /* menu hover bg color */
+  color: $input-readonly-color;
+  /* menu text color */
+  border-color: $input-border-color;
+}
+
+input:focus:invalid,
+textarea:focus:invalid,
+select:focus:invalid {
+  color: darken($input-error, 20%);
+  border-color: $input-error;
+}
+
+input[type="file"]:focus:invalid:focus,
+input[type="radio"]:focus:invalid:focus,
+input[type="checkbox"]:focus:invalid:focus {
+  outline-color: $input-error;
+}
+
+
+
+select {
+  /* Normalizes the height; padding is not sufficient. */
+  height: calc(5rem - 2px);
+  border: 1px solid $input-border-color;
+  background-color: $white;
+  &[multiple] {
+    height: auto;
+  }
+}
+
+label {
+  display: inline-block;
+  font-size: 2rem;
+  line-height: 3rem;
+  padding: 1rem 0;
+  margin-bottom: 1rem;
+  vertical-align: middle;
+}
+
+fieldset {
+  margin: 0;
+  padding: 1rem 0 2rem;
+  border: 0;
+}
+
+legend {
+  display: block;
+  width: 100%;
+  @include plumber();
+  color: $legend-color;
+  border-bottom: 1px solid $legend-border-bottom-color;
+}
+
+
+
+
+

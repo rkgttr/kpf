@@ -1,0 +1,71 @@
+@include plumber-set-defaults( $baseline: $global-baseline);
+html {
+  height: 100%;
+}
+
+html {
+  @include fluid-type();
+  box-sizing: border-box;
+}
+
+body {
+  height: 100%;
+  background: $white;
+  color: $black;
+  font-family: $global-font;
+  &.grid {
+    background-image: repeating-linear-gradient(to bottom, transparent 0, transparent calc(1rem - 1px), rgba(#0092b7, .3) 0, rgba(#0092b7, .3) 1rem);
+  }
+  overflow: hidden;
+  .wrapper {
+    cursor: grab;
+  }
+  //
+  &.grabbing {
+    .wrapper {
+
+      cursor: grabbing;
+    }
+  }
+  &.hover {
+    .wrapper {
+
+      cursor: pointer;
+    }
+  }
+}
+.vignette {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  box-shadow: 0 0 200px rgba(0,0,0,0.9) inset;
+  pointer-events: none;
+}
+.wrapper {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+  // canvas {
+  //   position: absolute;
+  //   top: 50%;
+  //   left: 50%;
+  //   transform: translate(-50%, -50%);
+  // }
+}
+
+// better default, can be changed to your convenience, comment the lines that you don't want
+* {
+  box-sizing: inherit;
+  background-repeat: no-repeat;
+  position: relative;
+  &:before,
+  &:after {
+    box-sizing: inherit;
+    background-repeat: no-repeat;
+    position: relative;
+  }
+}

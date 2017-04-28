@@ -1,0 +1,168 @@
+
+.modal {
+  display: none;
+  z-index: 100000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  &:focus {
+    .modal-content {
+      border: 1px solid $focus-color;
+    }
+  }
+  &:before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color:$modal-overlay-background;
+    content: '';
+    display: block;
+  }
+  &-shown,
+  &:target {
+    display: block;
+    &:before {
+      animation: overlay-fade-in .3s ease forwards;
+    }
+    .modal-wrapper {
+      animation: modal-fade-in .3s ease forwards;
+    }
+  }
+  &-closing {
+    display: block;
+    &:before {
+      animation: overlay-fade-out .3s ease forwards;
+    }
+    .modal-wrapper {
+      animation: modal-fade-out .3s ease forwards;
+    }
+  }
+  &-wrapper {
+    cursor: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: auto;
+    padding: 3rem;
+    @media #{$large}{
+      padding: 6rem;
+    }
+  }
+  &-content {
+    overflow: hidden;
+    background-color:$modal-background;
+    min-height: 100%;
+    width: 100%;
+    box-shadow: 0 0 2rem $modal-shadow-color;
+    border-radius: $modal-border-radius;
+    padding: 6rem;
+    h2,
+    article{
+      margin: 0 auto;
+      @media #{$large}{
+        max-width: $max-width / 1.5;
+      }
+      p:first-of-type{
+        margin-top: 3rem;
+      }
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      @media #{$large}{
+        float: left;
+        margin-left: -4rem;
+        margin-right: 3rem;
+        max-width: 40%;
+      }
+      display: block;
+      margin-bottom: 2rem;
+
+
+    }
+    @media #{$large}{
+      padding: 12rem;
+    }
+    color: $white;
+  }
+  &-close {
+    position: absolute;
+    top: 5rem;
+    right: 5rem;
+    @media #{$large}{
+      top: 8rem;
+      right: 8rem;
+    }
+
+    height: 6rem;
+    width: 6rem;
+    overflow: hidden;
+    text-indent: 120%;
+    white-space: nowrap;
+    color: rgba($black, 0);
+    text-align: center;
+    line-height: 6rem;
+    &:before,
+    &:after {
+      position: absolute;
+      content: '';
+      height: 1px;
+      width: 4rem;
+      border-left: 2rem solid $white;
+      border-right: 2rem solid $white;
+      left: 0;
+      top: 50%;
+      transition: transform .25s ease, border-left-width .25s ease, border-right-width .25s ease;
+    }
+    &:before {
+      transform: rotate(45deg);
+    }
+    &:after {
+      transform: rotate(-45deg);
+    }
+    &:hover {
+      &:before {
+        transform: rotate(315deg);
+        //border-left-width: .75rem;
+      }
+      &:after {
+        transform: rotate(45deg);
+        border-left-width: 1.6rem;
+        border-right-width: 1.9rem;
+      }
+    }
+  }
+  &-opened {
+    overflow: hidden;
+  }
+}
+
+@keyframes modal-fade-in {
+  from {
+    transform: translateY(-25%);
+    opacity: 0;
+  }
+}
+@keyframes modal-fade-out {
+  to {
+    transform: translateY(-25%);
+    opacity: 0;
+  }
+}
+
+@keyframes overlay-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes overlay-fade-out {
+  to {
+    opacity: 0;
+  }
+}

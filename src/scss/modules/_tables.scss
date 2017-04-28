@@ -1,0 +1,66 @@
+
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  empty-cells: show;
+  border: 1px solid $table-border-color;
+  caption {
+    color: $black;
+    padding: 2rem 0;
+    text-align: center;
+  }
+  td,
+  th {
+    border-left: 1px solid $table-border-color;
+    border-width: 0 0 0 1px;
+    font-size: inherit;
+    margin: 0;
+    overflow: visible;
+    @include plumber($leading-top: 1, $leading-bottom: 1);
+    padding-left: 2rem;
+    padding-right: 2rem;
+    text-align: left;
+    &.centred {
+      text-align: center;
+    }
+    &.right {
+      text-align: right;
+    }
+  }
+  td:first-child,
+  th:first-child {
+    border-left-width: 0;
+  }
+  thead {
+    background-color: $thead-background-color;
+    color: $black;
+    text-align: left;
+    vertical-align: bottom;
+  }
+  &.table-striped {
+    tr:nth-child(2n-1) td {
+      background-color: $tr-striped-odd-background-color;
+    }
+  }
+  &.table-bordered {
+    td {
+      border-bottom: 1px solid $table-border-color;
+    }
+    tbody > tr:last-child > td {
+      border-bottom-width: 0;
+    }
+  }
+  &.table-horizontal {
+    td,
+    th {
+      border-width: 0 0 1px 0;
+      border-bottom: 1px solid $table-border-color;
+    }
+    tbody > tr:last-child > td {
+      border-bottom-width: 0;
+    }
+  }
+}
+
+
