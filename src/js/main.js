@@ -10,7 +10,7 @@ import uuid from 'rkgttr-uuid';
 import Prng from 'rkgttr-prng';
 
 // Uncomment the following if you wish to use the Elements module, add the elements you want to unlock in the {}
-import { img, div, article, a, h2 } from 'rkgttr-elements';
+import { img, div, article, a, h2, input, label } from 'rkgttr-elements';
 
 // uncomment the following line if script fails in Internet Explorer, or other, due to ES6 features that need the Babel Polyfill
 // import 'babel-polyfill';
@@ -33,6 +33,54 @@ import 'rkgttr-classlistpolyfill';
   const texture = Q.id('texture');
   const textureCtx = texture.getContext('2d');
   const body = Q.one('body');
+  const filterBuilder = string => {
+    return div(
+      { className: 'filter' },
+      input({
+        type: 'checkbox',
+        checked: true,
+        id: slugify(string),
+        dataset: {
+          filter: string
+        },
+        onmousedown: e => e.stopPropagation(),
+        onmouseup: e => e.stopPropagation(),
+        onchange: e => {
+          if (
+            e.target.getAttribute('data-filter') === 'Toutes les catégories' &&
+            e.target.checked
+          ) {
+            Q.all('.filter input:not(:checked)').forEach(
+              cb => (cb.checked = true)
+            );
+          } else if (
+            e.target.getAttribute('data-filter') === 'Toutes les catégories' &&
+            !e.target.checked
+          ) {
+            e.target.checked = true;
+          } else {
+            if (
+              Q.all('.filter input:checked:not([data-filter="Toutes les catégories"])').length <
+              Q.all('.filter input:not([data-filter="Toutes les catégories"])').length
+            ) {
+              Q.one('[data-filter="Toutes les catégories"]').checked = false;
+            } else {
+              Q.one('[data-filter="Toutes les catégories"]').checked = true;
+            }
+          }
+          filterData();
+        }
+      }),
+      label(
+        {
+          'for': slugify(string),
+          onmousedown: e => e.stopPropagation(),
+          onmouseup: e => e.stopPropagation()
+        },
+        string
+      )
+    );
+  };
   const modalBuilder = data => {
     return div(
       {
@@ -90,6 +138,7 @@ import 'rkgttr-classlistpolyfill';
     }
   };
   const handleMouseup = e => {
+    console.log(e.target, e.currentTarget);
     if (!body.classList.contains('modal-opened')) {
       mx = e.pageX / scale - x;
       my = e.pageY / scale - y;
@@ -179,6 +228,19 @@ import 'rkgttr-classlistpolyfill';
       e.stopPropagation();
     }
   };
+  const HandleShowFilter = e => {
+    e.stopPropagation();
+    let filters = Q.one('.filters'),
+      button = Q.one('.filters-show');
+    if(filters.classList.contains('filters-shown')) {
+      filters.classList.remove('filters-shown');
+      button.classList.remove('filters-show--close');
+    } else {
+
+      filters.classList.add('filters-shown');
+      button.classList.add('filters-show--close');
+    }
+  }
   const addListeners = all => {
     if (!all) {
       window.addEventListener('resize', handleResize);
@@ -190,59 +252,42 @@ import 'rkgttr-classlistpolyfill';
       body.addEventListener('touchmove', touchMove, false);
       body.addEventListener('touchend', touchEnd, false);
       body.addEventListener('keydown', handleKeydown);
+      Q.one('.filters-show').addEventListener('click', HandleShowFilter);
     }
+  };
+  const distance = (ax, ay, bx, by) => {
+    let distx = ax - bx, disty = ay - by;
+    return Math.sqrt(distx * distx + disty * disty);
   };
   const drawSpiral = () => {
-    let sx = 0, sy = 0, d = 1, m = 1, qty = imgsLoaded, i = 0, n = 0;
-    while (i < qty) {
-      while (2 * sx * d < m) {
-        if (n >= imgsLoaded) {
-          break;
-        }
-        sx = sx + d;
-        drawImage(n, sx, sy);
-        n++;
-      }
-      while (2 * sy * d < m) {
-        if (n >= imgsLoaded) {
-          break;
-        }
-        sy = sy + d;
-        drawImage(n, sx, sy);
-        n++;
-      }
-      if (n >= imgsLoaded) {
-        break;
-      }
-      d = -1 * d;
-      m = m + 1;
-      i++;
-    }
+    dataSet.forEach((data, i) => {
+      drawImage(i, data.sx, data.sy);
+    });
   };
   const drawImage = (n, sx, sy) => {
-    sx *= 0.3;
-    sy *= 0.3;
-    textureCtx.save();
-    textureCtx.translate(sx * scale + x * scale, sy * scale + y * scale);
-    dataSet[n].area = {
-      left: sx,
-      top: sy,
-      right: sx + dataSet[n].imageData.width / scale,
-      bottom: sy + dataSet[n].imageData.height / scale,
-      width: dataSet[n].imageData.width / scale,
-      height: dataSet[n].imageData.height / scale
-    };
-    textureCtx.drawImage(
-      dataSet[n].imageData,
-      0,
-      0,
-      dataSet[n].imageData.width,
-      dataSet[n].imageData.height
-    );
-    textureCtx.restore();
+    if (distance(sx, sy, -x, -y) < minDistanceDisplay && dataSet[n].imageData) {
+      textureCtx.save();
+      textureCtx.translate(sx * scale + x * scale, sy * scale + y * scale);
+      dataSet[n].area = {
+        left: sx,
+        top: sy,
+        right: sx + dataSet[n].imageData.width / scale,
+        bottom: sy + dataSet[n].imageData.height / scale,
+        width: dataSet[n].imageData.width / scale,
+        height: dataSet[n].imageData.height / scale
+      };
+      textureCtx.drawImage(
+        dataSet[n].imageData,
+        0,
+        0,
+        dataSet[n].imageData.width,
+        dataSet[n].imageData.height
+      );
+      textureCtx.restore();
+    }
   };
   const initApp = () => {
-    loadData().then(loadImages, logError);
+    loadData().then(processData, logError);
     loadTexture();
   };
   const loadData = () => {
@@ -251,7 +296,9 @@ import 'rkgttr-classlistpolyfill';
       req.open('GET', 'data/data.json', true);
       req.onload = () => {
         if (req.status === 200) {
-          resolve(JSON.parse(req.responseText));
+          fullData = JSON.parse(req.responseText);
+          fullData.forEach(d => d.categories.push('Toutes les catégories'));
+          resolve(fullData);
         } else {
           reject(Error(req.statusText));
         }
@@ -264,8 +311,17 @@ import 'rkgttr-classlistpolyfill';
     });
   };
   const logError = error => console.log(error);
-  const initData = data => {
-    dataSet = data;
+  const filterData = () => {
+    initData(
+      fullData,
+      Q.all('.filter input:checked').map(f => f.getAttribute('data-filter'))
+    );
+  };
+  const initData = (data, filter = ['Toutes les catégories']) => {
+    console.log(filter);
+    dataSet = data.filter(
+      d => filter.filter(f => ~d.categories.indexOf(f)).length
+    );
     imgsQty = data.length;
     dataSet.forEach((data, i) => {
       data.slug = slugify(data.title);
@@ -273,6 +329,42 @@ import 'rkgttr-classlistpolyfill';
       data.area = { left: 0, top: 0, right: 0, bottom: 0 };
       body.appendChild(modalBuilder(data));
     });
+    let sx = 0,
+      sy = 0,
+      d = 1,
+      m = 1,
+      qty = dataSet.length * 2,
+      i = 0,
+      n = 0,
+      dataI;
+    while (i < qty) {
+      while (2 * sx * d < m) {
+        if (n === dataSet.length) {
+          break;
+        }
+        sx = sx + d;
+        dataI = dataSet[n];
+        dataI.sx = sx * 0.3;
+        dataI.sy = sy * 0.3;
+        n++;
+      }
+      while (2 * sy * d < m) {
+        if (n === dataSet.length) {
+          break;
+        }
+        sy = sy + d;
+        dataI = dataSet[n];
+        dataI.sx = sx * 0.3;
+        dataI.sy = sy * 0.3;
+        n++;
+      }
+      if (n === dataSet.length) {
+        break;
+      }
+      d = -1 * d;
+      m = m + 1;
+      i++;
+    }
   };
   const initModalAndRouter = () => {
     Modal();
@@ -292,23 +384,39 @@ import 'rkgttr-classlistpolyfill';
       }
     });
   };
-  const loadImages = data => {
-    if (data) {
-      initData(data);
-      initModalAndRouter();
-    }
-    let image = new Image();
-    image.onload = e => {
-      dataSet[imgsLoaded].imageData = e.target;
-      imgsLoaded++;
-      if (imgsLoaded < imgsQty) {
-        loadImages();
+  const loadImagesBasedOnDistance = throttle(() => {
+    dataSet.forEach(data => {
+      if (
+        distance(data.sx, data.sy, -x, -y) < minDistanceLoad &&
+        !data.imageData
+      ) {
+        let image = new Image();
+        image.onload = e => {
+          data.imageData = e.target;
+        };
+        image.src = data.image;
+      } else if (
+        distance(data.sx, data.sy, -x, -y) >= minDistanceLoad &&
+        data.imageData
+      ) {
+        data.imageData = null;
       }
-      if (imgsLoaded === 1) {
-        addListeners(true);
-      }
-    };
-    image.src = dataSet[imgsLoaded].image;
+    });
+  }, 200);
+  const processData = data => {
+    setFilters(data);
+    initData(data);
+    initModalAndRouter();
+    loadImagesBasedOnDistance();
+    addListeners(true);
+  };
+  const setFilters = data => {
+    data
+      .map(d => d.categories)
+      .reduce((a, b) => a.concat(b))
+      .filter((e, i, a) => a.indexOf(e) === i)
+      .sort()
+      .forEach(e => Q.one('.filters').appendChild(filterBuilder(e)));
   };
   const loadTexture = () => {
     let img = new Image();
@@ -324,11 +432,11 @@ import 'rkgttr-classlistpolyfill';
       textureCtx.fillStyle = texturePattern;
     }
     textureCtx.fillRect(-(x * scale), -(y * scale), scale, scale);
-    // textureCtx.fill();
   };
   const render = () => {
     requestAnimationFrame(render);
     renderTexture();
+    loadImagesBasedOnDistance();
     drawSpiral();
   };
 
@@ -341,12 +449,14 @@ import 'rkgttr-classlistpolyfill';
     textureCtx.restore();
   };
 
+  const minDistanceDisplay = 1;
+  const minDistanceLoad = minDistanceDisplay * 2;
+
   let texturePattern,
     imgsQty,
+    fullData,
     dataSet,
     selectedKnowledge,
-    imgsLoaded = 0,
-    images = [],
     scale,
     offsetTop,
     offsetLeft,
