@@ -67,6 +67,7 @@ export default class {
       handler(...this.currentRoute.result);
     };
     this.dispatch();
+    return this;
   }
 
   /**

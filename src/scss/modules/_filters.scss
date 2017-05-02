@@ -5,11 +5,13 @@
     transform: translateY(0);
   }
   &-show {
+    text-align: left;
     position: absolute;
+    width: 100%;
     top: 0;
     left: 0;
     transform: translateY(-100%);
-    background: rgba($black, .75);
+    background: $black;
     border: none;
     padding: 1rem 2rem 1rem 6.5rem;
 

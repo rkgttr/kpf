@@ -58,10 +58,15 @@ import 'rkgttr-classlistpolyfill';
             !e.target.checked
           ) {
             e.target.checked = true;
+          } else if (Q.all('.filter input:checked').length === 0) {
+            e.target.checked = true;
           } else {
             if (
-              Q.all('.filter input:checked:not([data-filter="Toutes les catégories"])').length <
-              Q.all('.filter input:not([data-filter="Toutes les catégories"])').length
+              Q.all(
+                '.filter input:checked:not([data-filter="Toutes les catégories"])'
+              ).length <
+              Q.all('.filter input:not([data-filter="Toutes les catégories"])')
+                .length
             ) {
               Q.one('[data-filter="Toutes les catégories"]').checked = false;
             } else {
@@ -73,7 +78,7 @@ import 'rkgttr-classlistpolyfill';
       }),
       label(
         {
-          'for': slugify(string),
+          for: slugify(string),
           onmousedown: e => e.stopPropagation(),
           onmouseup: e => e.stopPropagation()
         },
@@ -108,7 +113,7 @@ import 'rkgttr-classlistpolyfill';
     fillTexture(true);
   });
   const handleMousedown = e => {
-    if (!body.classList.contains('modal-opened')) {
+    if (!body.classList.contains('modal-opened') && e.which === 1) {
       clickTime = Date.now();
       body.classList.add('grabbing');
       grabbing = true;
@@ -117,7 +122,7 @@ import 'rkgttr-classlistpolyfill';
     }
   };
   const handleMousemove = e => {
-    if (!body.classList.contains('modal-opened')) {
+    if (!body.classList.contains('modal-opened') && e.which === 1) {
       if (grabbing) {
         let difx = e.pageX / scale - mx, dify = e.pageY / scale - my;
         dx += difx;
@@ -138,8 +143,7 @@ import 'rkgttr-classlistpolyfill';
     }
   };
   const handleMouseup = e => {
-    console.log(e.target, e.currentTarget);
-    if (!body.classList.contains('modal-opened')) {
+    if (!body.classList.contains('modal-opened') && e.which === 1) {
       mx = e.pageX / scale - x;
       my = e.pageY / scale - y;
       if (Date.now() - clickTime < 150) {
@@ -165,19 +169,22 @@ import 'rkgttr-classlistpolyfill';
   const touchDown = e => {
     handleMousedown({
       pageX: e.touches[0].pageX,
-      pageY: e.touches[0].pageY
+      pageY: e.touches[0].pageY,
+      which: 1
     });
   };
   const touchMove = e => {
     handleMousemove({
       pageX: e.touches[0].pageX,
-      pageY: e.touches[0].pageY
+      pageY: e.touches[0].pageY,
+      which: 1
     });
   };
   const touchEnd = e => {
     handleMouseup({
       pageX: e.touches[0].pageX,
-      pageY: e.touches[0].pageY
+      pageY: e.touches[0].pageY,
+      which: 1
     });
   };
   const handleKeydown = e => {
@@ -207,7 +214,6 @@ import 'rkgttr-classlistpolyfill';
               selectedKnowledge = 0;
             }
           }
-          console.log(dataSet[selectedKnowledge].area.width);
           dx =
             0.5 +
             offsetLeft -
@@ -230,17 +236,15 @@ import 'rkgttr-classlistpolyfill';
   };
   const HandleShowFilter = e => {
     e.stopPropagation();
-    let filters = Q.one('.filters'),
-      button = Q.one('.filters-show');
-    if(filters.classList.contains('filters-shown')) {
+    let filters = Q.one('.filters'), button = Q.one('.filters-show');
+    if (filters.classList.contains('filters-shown')) {
       filters.classList.remove('filters-shown');
       button.classList.remove('filters-show--close');
     } else {
-
       filters.classList.add('filters-shown');
       button.classList.add('filters-show--close');
     }
-  }
+  };
   const addListeners = all => {
     if (!all) {
       window.addEventListener('resize', handleResize);
@@ -253,6 +257,12 @@ import 'rkgttr-classlistpolyfill';
       body.addEventListener('touchend', touchEnd, false);
       body.addEventListener('keydown', handleKeydown);
       Q.one('.filters-show').addEventListener('click', HandleShowFilter);
+      Q.one('.filters-show').addEventListener('mousedown', e =>
+        e.stopPropagation()
+      );
+      Q.one('.filters-show').addEventListener('mouseup', e =>
+        e.stopPropagation()
+      );
     }
   };
   const distance = (ax, ay, bx, by) => {
@@ -318,7 +328,6 @@ import 'rkgttr-classlistpolyfill';
     );
   };
   const initData = (data, filter = ['Toutes les catégories']) => {
-    console.log(filter);
     dataSet = data.filter(
       d => filter.filter(f => ~d.categories.indexOf(f)).length
     );
@@ -383,6 +392,9 @@ import 'rkgttr-classlistpolyfill';
         }
       }
     });
+
+
+    console.log(document.location.hash);
   };
   const loadImagesBasedOnDistance = throttle(() => {
     dataSet.forEach(data => {
