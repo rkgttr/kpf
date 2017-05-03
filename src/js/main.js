@@ -3,11 +3,13 @@ import Modal from 'Modal';
 import throttle from 'throttle';
 import slugify from 'slug';
 import * as Helpers from 'Helpers';
-
 import * as Q from 'rkgttr-q';
 import Publisher from 'rkgttr-publisher';
-import uuid from 'rkgttr-uuid';
-import Prng from 'rkgttr-prng';
+import {search} from 'fuzzy';
+// import uuid from 'rkgttr-uuid';
+// import Prng from 'rkgttr-prng';
+
+
 
 // Uncomment the following if you wish to use the Elements module, add the elements you want to unlock in the {}
 import { img, div, article, a, h2, input, label } from 'rkgttr-elements';
@@ -188,7 +190,7 @@ import 'rkgttr-classlistpolyfill';
     });
   };
   const handleKeydown = e => {
-    if (!body.classList.contains('modal-opened')) {
+    if (!body.classList.contains('modal-opened') && e.target.getAttribute('id') !== 'search') {
       switch (e.keyCode) {
         case 38:
           dy += 0.1;
@@ -245,6 +247,10 @@ import 'rkgttr-classlistpolyfill';
       button.classList.add('filters-show--close');
     }
   };
+  const searchHandler = e => {
+    e.preventDefault();
+    initData(fullData);
+  };
   const addListeners = all => {
     if (!all) {
       window.addEventListener('resize', handleResize);
@@ -263,6 +269,13 @@ import 'rkgttr-classlistpolyfill';
       Q.one('.filters-show').addEventListener('mouseup', e =>
         e.stopPropagation()
       );
+      Q.one('.search').addEventListener('mousedown', e =>
+        e.stopPropagation()
+      );
+      Q.one('.search').addEventListener('mouseup', e =>
+        e.stopPropagation()
+      );
+      Q.one('.search').addEventListener('submit', searchHandler);
     }
   };
   const distance = (ax, ay, bx, by) => {
@@ -331,6 +344,9 @@ import 'rkgttr-classlistpolyfill';
     dataSet = data.filter(
       d => filter.filter(f => ~d.categories.indexOf(f)).length
     );
+    if(Q.id('search').value.length){
+      dataSet = search(Q.id('search').value, dataSet, {keySelector: obj => obj.title});
+    }
     imgsQty = data.length;
     dataSet.forEach((data, i) => {
       data.slug = slugify(data.title);
@@ -374,6 +390,7 @@ import 'rkgttr-classlistpolyfill';
       m = m + 1;
       i++;
     }
+    console.log('-----', search("esanc", dataSet, {keySelector: obj => obj.title}));
   };
   const initModalAndRouter = () => {
     Modal();
@@ -393,8 +410,6 @@ import 'rkgttr-classlistpolyfill';
       }
     });
 
-
-    console.log(document.location.hash);
   };
   const loadImagesBasedOnDistance = throttle(() => {
     dataSet.forEach(data => {

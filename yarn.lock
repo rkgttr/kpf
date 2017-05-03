@@ -4354,9 +4354,9 @@ rkgttr-consolepolyfill@^0.0.2:
   dependencies:
     babel-runtime "^6.11.6"
 
-rkgttr-elements@^0.0.5:
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/rkgttr-elements/-/rkgttr-elements-0.0.5.tgz#dcd6f6b89c87ad489ce0178f96c0f4c3ea7f30b7"
+rkgttr-elements@^0.0.7:
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/rkgttr-elements/-/rkgttr-elements-0.0.7.tgz#196c2bb7499a4f14a69a244bebc99786ad7f8ece"
   dependencies:
     babel-runtime "^6.11.6"
     rkgttr-arrayincludespolyfill "^0.0.1"

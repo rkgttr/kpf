@@ -34,7 +34,7 @@
     "plumber-box": "^1.1.0",
     "plumber-sass": "^0.7.6",
     "require-dir": "^0.3.1",
-    "rkgttr-elements": "^0.0.6",
+    "rkgttr-elements": "^0.0.7",
     "rkgttr-polyfills": "^0.0.6",
     "rkgttr-prng": "^0.0.2",
     "rkgttr-publisher": "^0.0.8",
